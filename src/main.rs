@@ -16,6 +16,7 @@ struct send_command{
     start: String,
     start_command: String,
     pc_name: String,
+    status: String,
 
 }
 
@@ -34,15 +35,16 @@ fn main() {
         start:String::from("online"),
         start_command:String::from("none"),
         pc_name:String::from("none"),
+        status:String::from("none"),
     };
 
     loop {
         let mut serial_d =rmp_serde::to_vec(&go).expect("Fehler beim Serialiezisen");
-        socket_client.send(&serial_d, 0).unwrap();                                              //Sende Anmeldung
+        socket_client.send(&serial_d, 0).unwrap();                                              //Sende Anmeldung SEND 1
 
         println!("Angemeldet:..");                                                                          //Erhalte Befehl
         println!("Warte auf die Anfrage vom Server:....");
-        let mut get_data=socket_client.recv_bytes(0).unwrap();
+        let mut get_data=socket_client.recv_bytes(0).unwrap();                              // recv 1
         println!("Daten erhatlen vom Server:..");
         let mut re_got_data:send_command=rmp_serde::from_slice(&get_data).expect("Fehler beim Deserialisieren:..");
         println!("Folgenden Befehl erhalten:...{:?}",re_got_data.start_command);
@@ -54,20 +56,20 @@ fn main() {
                 println!("Bei Info:...");
                 go.pc_name=String::from("PC name lautet: Hans");
                 let mut serial_d =rmp_serde::to_vec(&go).expect("Fehler beim Serialiezisen");
-                socket_client.send(&serial_d, 0).unwrap();
-                println!("Befehl wurde beantwortet und gesendet:...");
+                socket_client.send(&serial_d, 0).unwrap();                  //send 2 Anwort wird gesendet
+                println!("Befehl wurde beantwortet und gesendet:...");                  // recv 2 geht danach zu send 1
                 let mut get_data2=socket_client.recv_bytes(0).unwrap();
 
             }
-            _=>println!("Befehl unbekannt:..."),
+            _=>{
+
+                println!("Befehl unbekannt:...");
+                                                                 //send 1
+            }
+            
         }
 
         
-
-
-
-
-
 
 
     }
