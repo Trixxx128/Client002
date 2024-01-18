@@ -13,3 +13,4 @@ zmq="0.10.0"
 get_if_addrs="0.5.3"
 rmp-serde = "0.15"
 serde = { version = "1", features = ["derive"] }
+whoami="1.4.1"

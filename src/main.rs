@@ -5,9 +5,15 @@ use std::thread;
 use std::time::Duration;
 use zmq::{Context, Socket, REQ};
 use std::str;
+use std::ffi::OsString;
 
 use serde::{Serialize, Deserialize};
 use rmp_serde::{to_vec, from_slice};
+
+
+use hostname;
+use whoami::lang;
+use whoami::Platform;
 
 
 
@@ -17,10 +23,32 @@ struct send_command{
     start_command: String,
     pc_name: String,
     status: String,
+    user_real_name: String,
+    user: String,
+    language: Vec<String>,
+    platform: String,
+    desktop:String,
+    cpu:String,
 
 }
 
+trait InfoOp{
+    fn get_sys_info(&mut self);
+}
 
+
+impl InfoOp for send_command {
+    fn get_sys_info(&mut self) {
+        self.pc_name=String::from(hostname::get().unwrap().to_str().unwrap());
+        self.user_real_name=String::from(whoami::realname());
+        self.user=String::from(whoami::username());
+        self.language=whoami::lang().collect();
+        self.platform= format!("{:?}", whoami::platform());
+        self.desktop= format!("{:?}", whoami::desktop_env());
+        self.cpu= format!("{:?}", whoami::arch());
+
+    }
+}
 
 
 fn main() {
@@ -36,6 +64,12 @@ fn main() {
         start_command:String::from("none"),
         pc_name:String::from("none"),
         status:String::from("none"),
+        user_real_name:String::from("none"),
+        user:String::from("none"),
+        language: Vec::new(),
+        platform:String::from("none"),
+        desktop:String::from("none"),
+        cpu:String::from("none"),
     };
 
     loop {
@@ -53,8 +87,10 @@ fn main() {
 
         match re_got_data.start_command.as_str(){                                               //Sende Antwort
             "info"=>{
+
+
                 println!("Bei Info:...");
-                go.pc_name=String::from("PC name lautet: Hans");
+                go.pc_name=String::from(hostname::get().unwrap().to_str().unwrap());
                 let mut serial_d =rmp_serde::to_vec(&go).expect("Fehler beim Serialiezisen");
                 socket_client.send(&serial_d, 0).unwrap();                  //send 2 Anwort wird gesendet
                 println!("Befehl wurde beantwortet und gesendet:...");                  // recv 2 geht danach zu send 1
