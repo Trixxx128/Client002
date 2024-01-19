@@ -90,7 +90,8 @@ fn main() {
 
 
                 println!("Bei Info:...");
-                go.pc_name=String::from(hostname::get().unwrap().to_str().unwrap());
+               // go.pc_name=String::from(hostname::get().unwrap().to_str().unwrap());
+                go.get_sys_info();
                 let mut serial_d =rmp_serde::to_vec(&go).expect("Fehler beim Serialiezisen");
                 socket_client.send(&serial_d, 0).unwrap();                  //send 2 Anwort wird gesendet
                 println!("Befehl wurde beantwortet und gesendet:...");                  // recv 2 geht danach zu send 1
