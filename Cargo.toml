@@ -14,3 +14,5 @@ get_if_addrs="0.5.3"
 rmp-serde = "0.15"
 serde = { version = "1", features = ["derive"] }
 whoami="1.4.1"
+local-ip-address = "0.5.6"
+ifcfg ="0.1.2"
